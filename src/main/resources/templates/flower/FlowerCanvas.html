@@ -54,14 +54,14 @@
             margin: 5px;
         }
 
-        .clear, .fill {
+        .clear, .fill, .undo, .redo {
             background: rgba(100, 100, 100, 0.2);
         }
 
 
         #lineWidthSlider {
             position: absolute;
-            left: -180px;
+            left: -150px;
             top: 95%;
             transform: translateY(-50%);
             display: flex;
@@ -96,12 +96,14 @@
             <span class="white">white</span>
             <span class="clear">clear</span>
             <span class="fill">fill</span>
+            <span class="undo">실행취소</span>
+            <span class="redo">복구</span>
 
         </div>
         <div id="lineWidthSlider">
-            <label for="lineWidthSlider">Size:</label>
-            <input type="range" min="1" max="10" value="3" class="slider">
-            <span id="sliderValue">3</span>px
+
+            <input type="range" min="1" max="20" value="3" class="slider">
+            <p> Size: <span id="sliderValue">3</span> px </p>
         </div>
 
     </div>
@@ -127,6 +129,8 @@
     const ctx = canvas.getContext("2d");
     const sliderValue = document.getElementById('sliderValue');
 
+    let isSave = 0;
+
 
     function resizeCanvas() {
         // 캔버스의 컨테이너 크기에 맞춰 캔버스 크기 조정
@@ -143,6 +147,7 @@
 
     function stopPainting() {
         painting = false;
+        isSave = 0;
     }
 
     function startPainting() {
@@ -168,13 +173,15 @@
 
     canvas.addEventListener("mousemove", onMouseMove);
     canvas.addEventListener("mousedown", startPainting);
+    canvas.addEventListener("mousedown", saveState);
+
     canvas.addEventListener("mouseup", stopPainting);
     canvas.addEventListener("mouseleave", stopPainting);
 
     const buttons = [
         "red", "orange", "yellow", "green", "blue",
         "navy", "purple", "black", "white", "clear",
-        "fill"
+        "fill", "undo", "redo"
     ];
     let lineColor = "black";
 
@@ -195,6 +202,15 @@
         ctx.fillStyle = lineColor;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
     };
+    document.querySelector(".undo").onclick = () => {
+        console.log(undoStack.length);
+        restoreState(undoStack, redoStack);
+    };
+
+    document.querySelector(".redo").onclick = () => {
+        restoreState(redoStack, undoStack);
+    };
+
 
 
     //꽃 사진 저장
@@ -231,6 +247,37 @@
         ctx.lineWidth = event.target.value;
         sliderValue.textContent = event.target.value;
     });
+
+
+    //실행 취소 기능 임시
+    let undoStack = [];
+    let redoStack = [];
+
+    function saveState() {
+
+        if(isSave == 0){
+            console.log(undoStack.length);
+            console.log("저장")
+            isSave = 1;
+            undoStack.push(canvas.toDataURL());
+        }
+        //redoStack = []; // 새로운 작업이 발생하면 redoStack 초기화
+    }
+
+
+    function restoreState(stack, oppositeStack) {
+        if (stack.length > 0) {
+            oppositeStack.push(canvas.toDataURL());
+            const imgData = stack.pop();
+            const img = new Image();
+            img.src = imgData;
+            img.onload = () => {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.drawImage(img, 0, 0);
+            };
+        }
+    }
+
 
 </script>
 </body>

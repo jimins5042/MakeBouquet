@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,31 +10,31 @@
     <style>
         #canvasContainer {
             position: relative;
-            width: 600px; /* 고정된 가로 길이 */
-            height: 600px; /* 고정된 세로 길이 */
-            margin: 0 auto; /* 가로 중앙 정렬 */
+            width: 600px;
+            height: 600px;
+            margin: 0 auto;
         }
 
         canvas {
-            position: absolute; /* 캔버스를 겹치도록 설정 */
+            position: absolute;
             top: 0;
             left: 0;
-            width: 100%; /* 부모 컨테이너에 맞춤 */
-            height: 100%; /* 부모 컨테이너에 맞춤 */
+            width: 100%;
+            height: 100%;
             border: 3px double;
             cursor: pointer;
         }
 
         #palette {
             position: absolute;
-            left: -150px; /* 버튼들을 캔버스 왼쪽으로 이동 */
-            top: 50%; /* 세로 중앙 정렬 */
-            transform: translateY(-50%); /* 중앙 정렬 보정 */
+            left: -150px;
+            top: 50%;
+            transform: translateY(-50%);
             display: flex;
             flex-direction: row;
             flex-wrap: wrap;
             justify-content: center;
-            width: 140px; /* 전체 너비 */
+            width: 140px;
             height: auto;
         }
 
@@ -46,19 +45,35 @@
             text-shadow: 1px 0 black, 0 1px black, 1px 0 black, 0 -1px gray;
             line-height: 40px;
             text-align: center;
-            width: 60px;  /* 크기를 줄여서 두 줄로 배치 가능하게 만듭니다 */
-            height: 60px; /* 크기를 줄여서 두 줄로 배치 가능하게 만듭니다 */
+            width: 60px;
+            height: 60px;
             border-radius: 20px;
             border: 4px solid rgba(129, 101, 101, 0.151);
             box-shadow: 1px 2px 2px gray;
             margin: 5px;
         }
 
-        .clear, .fill {
+        .clear, .fill, .undo, .redo {
             background: rgba(100, 100, 100, 0.2);
         }
 
         #sliderContainer {
+            position: absolute;
+            left: -150px;
+            top: calc(100%); /* 슬라이더 위치를 조정 */
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 140px;
+        }
+
+        #sliderContainer input[type="range"] {
+            width: 100%;
+            margin: 10px 0;
+        }
+
+        #thumbnailContainer {
             position: absolute;
             right: -180px;
             top: 50%;
@@ -66,10 +81,17 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            max-width: 140px;
+            height: auto;
         }
 
-        #sliderContainer input[type="range"] {
-            margin: 10px;
+        #thumbnailContainer img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            margin: 10px 0;
+            border: 2px solid #ccc;
+            border-radius: 5px;
         }
     </style>
 </head>
@@ -79,7 +101,9 @@
     <div id="canvasContainer" class="col-12">
         <canvas id="imageCanvas"></canvas>
         <canvas id="canvas"></canvas>
+
         <div id="palette" class="d-flex flex-wrap justify-content-center">
+            <!-- 기존 팔레트 코드 유지 -->
             <span class="red">red</span>
             <span class="orange">orange</span>
             <span class="yellow">yellow</span>
@@ -91,18 +115,24 @@
             <span class="white">white</span>
             <span class="clear">clear</span>
             <span class="fill">fill</span>
+            <span class="undo">실행취소</span>
+            <span class="redo">복구</span>
+
             <button id="drawBtn" class="btn btn-primary">이미지 삽입 활성화/비활성화</button>
         </div>
 
         <div id="sliderContainer">
-            <label for="sizeSlider">Size:</label>
+
             <input id="sizeSlider" type="range" min="50" max="300" value="200">
-            <span id="sliderValue">200</span>px
+            <p> Size: <span id="sliderValue">200</span> px </p>
+        </div>
+
+        <div id="thumbnailContainer">
+            <!-- 여기서 섬네일 이미지들이 보여질 예정 -->
         </div>
     </div>
 
     <div class="row mt-3">
-
         <div class="col-6 text-right">
             <button id="downloadBtn" class="btn btn-primary">Download Image</button>
         </div>
@@ -121,6 +151,7 @@
     /*<![CDATA[*/
     let isDrawing = true; // 기본적으로 선 그리기 활성화
     let isAddingImage = false; // 이미지 삽입 비활성화
+    let isSave = 0; //그림의 저장 여부 판단
 
     const imageCanvas = document.getElementById('imageCanvas');
     const imageCtx = imageCanvas.getContext('2d');
@@ -168,6 +199,7 @@
 
     function stopPainting() {
         painting = false;
+        isSave = 0;
     }
 
     function startPainting() {
@@ -177,22 +209,21 @@
     ctx.lineWidth = 3;
 
     let flowerImg = new Image();
-    //이미지 로딩을 시작한다.
 
     const savedImage = localStorage.getItem('savedImage');  // 로컬스토리지에서 저장된 이미지를 호출
 
-    if (!savedImage) {
+    if (savedImage) {
+        flowerImg.src = savedImage;
+        displayThumbnail(savedImage); // 섬네일 보여주기
+    } else {
         alert('No image found in storage!');
     }
-
-    flowerImg.src = savedImage;
 
     slider.addEventListener('input', function() {
         imgSize = this.value;
         sliderValue.textContent = imgSize;
     });
 
-    // onMouseMove 핸들러 수정
     function onMouseMove(event) {
         if (!isDrawing) return; // 선 그리기가 활성화되어 있지 않으면 아무것도 하지 않음
         const x = event.offsetX;
@@ -207,22 +238,16 @@
         }
     }
 
-    // canvas.onclick 핸들러 수정
     canvas.onclick = function (event) {
         if (!isAddingImage) return; // 이미지 삽입이 활성화되어 있지 않으면 아무것도 하지 않음
 
-        // 캔버스에서의 좌표 변수에 저장
         const x = event.offsetX;
         const y = event.offsetY;
 
-        // 클릭할 때마다 이미지 넣기. 클릭한 지점이 이미지의 정중앙
         ctx.drawImage(flowerImg, x - imgSize / 2, y - imgSize / 2, imgSize, imgSize);
-
     };
 
-    // 버튼을 클릭하여 상태 변수를 변경합니다.
     document.getElementById('drawBtn').addEventListener('click', function() {
-
         if(isDrawing == false){
             isDrawing = true;
             isAddingImage = false;
@@ -232,17 +257,16 @@
         }
     });
 
-
     canvas.addEventListener("mousemove", onMouseMove);
     canvas.addEventListener("mousedown", startPainting);
+    canvas.addEventListener("mousedown", saveState);
     canvas.addEventListener("mouseup", stopPainting);
     canvas.addEventListener("mouseleave", stopPainting);
-
 
     const buttons = [
         "red", "orange", "yellow", "green", "blue",
         "navy", "purple", "black", "white", "clear",
-        "fill"
+        "fill", "undo", "redo"
     ];
     let lineColor = "black";
 
@@ -264,7 +288,15 @@
         ctx.fillRect(0, 0, canvas.width, canvas.height);
     };
 
-    // 그림을 다운로드
+    document.querySelector(".undo").onclick = () => {
+        console.log(undoStack.length);
+        restoreState(undoStack, redoStack);
+    };
+
+    document.querySelector(".redo").onclick = () => {
+        restoreState(redoStack, undoStack);
+    };
+
     function downloadImage() {
         const image = canvas.toDataURL('image/png');
         const link = document.createElement('a');
@@ -276,7 +308,6 @@
     const downloadBtn = document.getElementById('downloadBtn');
     downloadBtn.addEventListener('click', downloadImage);
 
-    // 그림을 서버로 전송
     function sendImageToServer() {
         const image = canvas.toDataURL('image/png');
         const blob = dataURItoBlob(image);
@@ -310,6 +341,43 @@
 
     const uploadBtn = document.getElementById('uploadBtn');
     uploadBtn.addEventListener('click', sendImageToServer);
+
+    function displayThumbnail(imageData) {
+        const thumbnailContainer = document.getElementById('thumbnailContainer');
+        const imgElement = document.createElement('img');
+        imgElement.src = imageData;
+        thumbnailContainer.appendChild(imgElement);
+    }
+
+    //실행 취소 기능 임시
+    let undoStack = [];
+    let redoStack = [];
+
+    function saveState() {
+
+        if(isSave == 0){
+            console.log(undoStack.length);
+            console.log("저장")
+            isSave = 1;
+            undoStack.push(canvas.toDataURL());
+        }
+        //redoStack = []; // 새로운 작업이 발생하면 redoStack 초기화
+    }
+
+
+    function restoreState(stack, oppositeStack) {
+        if (stack.length > 0) {
+            oppositeStack.push(canvas.toDataURL());
+            const imgData = stack.pop();
+            const img = new Image();
+            img.src = imgData;
+            img.onload = () => {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.drawImage(img, 0, 0);
+            };
+        }
+    }
+
     /*]]>*/
 </script>
 </body>
