@@ -1,4 +1,4 @@
-package personal.MakeBouquet.controller;
+package personal.MakeBouquet.upload.controller;
 
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -8,9 +8,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import personal.MakeBouquet.Image;
-import personal.MakeBouquet.ImageMapper;
-import personal.MakeBouquet.service.UploadService;
+import personal.MakeBouquet.upload.Image;
+import personal.MakeBouquet.upload.ImageMapper;
+import personal.MakeBouquet.upload.service.UploadService;
 
 import java.io.IOException;
 import java.util.ArrayList;

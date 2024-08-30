@@ -1,4 +1,4 @@
-package personal.MakeBouquet.service;
+package personal.MakeBouquet.upload.service;
 
 
 import com.amazonaws.AmazonServiceException;
@@ -9,8 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import personal.MakeBouquet.Image;
-import personal.MakeBouquet.ImageMapper;
+import personal.MakeBouquet.upload.Image;
+import personal.MakeBouquet.upload.ImageMapper;
 
 import java.io.IOException;
 import java.net.URLDecoder;

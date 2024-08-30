@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import personal.MakeBouquet.FlowerMapper;
-import personal.MakeBouquet.service.UploadService;
+import personal.MakeBouquet.MakingMyOwnBouquet.mapper.FlowerMapper;
+import personal.MakeBouquet.upload.service.UploadService;
 
 import java.io.IOException;
 import java.util.List;

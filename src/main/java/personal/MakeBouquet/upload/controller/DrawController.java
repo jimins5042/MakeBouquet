@@ -1,4 +1,4 @@
-package personal.MakeBouquet.controller;
+package personal.MakeBouquet.upload.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -9,11 +9,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
-import personal.MakeBouquet.Image;
-import personal.MakeBouquet.service.UploadService;
+import personal.MakeBouquet.upload.Image;
+import personal.MakeBouquet.upload.service.UploadService;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 @Controller
 @Slf4j

@@ -1,4 +1,4 @@
-package personal.MakeBouquet;
+package personal.MakeBouquet.upload;
 
 import lombok.Getter;
 import lombok.Setter;

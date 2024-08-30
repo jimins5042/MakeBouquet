@@ -1,8 +1,7 @@
-package personal.MakeBouquet;
+package personal.MakeBouquet.MakingMyOwnBouquet.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
-import personal.MakeBouquet.MakingMyOwnBouquet.entity.FlowerPackageEntity;
 
 import java.util.List;
 

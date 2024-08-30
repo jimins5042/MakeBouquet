@@ -1,4 +1,4 @@
-package personal.MakeBouquet;
+package personal.MakeBouquet.upload;
 
 import org.apache.ibatis.annotations.*;
 
