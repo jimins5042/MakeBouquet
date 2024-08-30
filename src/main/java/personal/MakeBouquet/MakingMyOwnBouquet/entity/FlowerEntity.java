@@ -9,7 +9,7 @@ import java.io.File;
 @Getter@Setter
 public class FlowerEntity {
     private MultipartFile file;
-    private String packageName;
+    private String backgroundName;
 
     public FlowerEntity() {
     }
@@ -18,8 +18,8 @@ public class FlowerEntity {
         this.file = file;
     }
 
-    public FlowerEntity(MultipartFile file, String packageName) {
+    public FlowerEntity(MultipartFile file, String backgroundName) {
         this.file = file;
-        this.packageName = packageName;
+        this.backgroundName = backgroundName;
     }
 }

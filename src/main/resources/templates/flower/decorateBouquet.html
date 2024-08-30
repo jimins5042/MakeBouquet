@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>그림 그리기</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        #canvasContainer {
+            position: relative;
+            width: 600px; /* 고정된 가로 길이 */
+            height: 600px; /* 고정된 세로 길이 */
+            margin: 0 auto; /* 가로 중앙 정렬 */
+        }
+
+        canvas {
+            position: absolute; /* 캔버스를 겹치도록 설정 */
+            top: 0;
+            left: 0;
+            width: 100%; /* 부모 컨테이너에 맞춤 */
+            height: 100%; /* 부모 컨테이너에 맞춤 */
+            border: 3px double;
+            cursor: pointer;
+        }
+
+        #palette {
+            position: absolute;
+            left: -120px; /* 버튼들을 캔버스 왼쪽으로 이동 */
+            top: 50%; /* 세로 중앙 정렬 */
+            transform: translateY(-50%); /* 중앙 정렬 보정 */
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            justify-content: center;
+            width: 100px; /* 전체 너비 */
+            height: auto;
+        }
+
+        #palette span {
+            cursor: pointer;
+            color: white;
+            display: inline-block;
+            text-shadow: 1px 0 black, 0 1px black, 1px 0 black, 0 -1px gray;
+            line-height: 40px;
+            text-align: center;
+            width: 40px;  /* 크기를 줄여서 두 줄로 배치 가능하게 만듭니다 */
+            height: 40px; /* 크기를 줄여서 두 줄로 배치 가능하게 만듭니다 */
+            border-radius: 20px;
+            border: 4px solid rgba(129, 101, 101, 0.151);
+            box-shadow: 1px 2px 2px gray;
+            margin: 5px;
+        }
+
+        .clear, .fill {
+            background: rgba(100, 100, 100, 0.2);
+        }
+
+        #sliderContainer {
+            position: absolute;
+            right: -180px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #sliderContainer input[type="range"] {
+            margin: 10px;
+        }
+    </style>
+</head>
+<body class="d-flex flex-column align-items-center justify-content-center">
+
+<div class="container">
+    <div id="canvasContainer" class="col-12">
+        <canvas id="imageCanvas"></canvas>
+        <canvas id="canvas"></canvas>
+        <div id="palette" class="d-flex flex-wrap justify-content-center">
+            <span class="red">red</span>
+            <span class="orange">orange</span>
+            <span class="yellow">yellow</span>
+            <span class="green">green</span>
+            <span class="blue">blue</span>
+            <span class="navy">navy</span>
+            <span class="purple">purple</span>
+            <span class="black">black</span>
+            <span class="white">white</span>
+            <span class="clear">clear</span>
+            <span class="fill">fill</span>
+            <button id="drawBtn" class="btn btn-primary">이미지 삽입 활성화/비활성화</button>
+        </div>
+
+        <div id="sliderContainer">
+            <label for="sizeSlider">Size:</label>
+            <input id="sizeSlider" type="range" min="50" max="300" value="200">
+            <span id="sliderValue">200</span>px
+        </div>
+    </div>
+
+    <div class="row mt-3">
+
+        <div class="col-6 text-right">
+            <button id="downloadBtn" class="btn btn-primary">Download Image</button>
+        </div>
+        <div class="col-6 text-left">
+            <button id="uploadBtn" class="btn btn-success">Upload Image</button>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap JS and dependencies -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.6/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    let isDrawing = true; // 기본적으로 선 그리기 활성화
+    let isAddingImage = false; // 이미지 삽입 비활성화
+
+    const imageCanvas = document.getElementById('imageCanvas');
+    const imageCtx = imageCanvas.getContext('2d');
+
+    const canvas = document.querySelector("#canvas");
+    const ctx = canvas.getContext("2d");
+
+    let imgSize = 200; // 초기 이미지 사이즈
+    const slider = document.getElementById('sizeSlider');
+    const sliderValue = document.getElementById('sliderValue');
+
+    const img = new Image();
+
+    img.src = /*[[@{${backgroundImage}}]]*/ '';  //백그라운드 이미지 URL - 기본 URL을 설정하거나 서버에서 동적으로 삽입
+    console.log(img.src);
+
+    img.onload = () => {
+        // 원본 비율을 유지하면서 캔버스에 맞게 이미지 크기 조정
+        const canvasWidth = imageCanvas.width;
+        const canvasHeight = imageCanvas.height;
+
+        const imgWidth = img.width;
+        const imgHeight = img.height;
+
+        const scale = Math.min(canvasWidth / imgWidth, canvasHeight / imgHeight);
+        const x = (canvasWidth - imgWidth * scale) / 2;
+        const y = (canvasHeight - imgHeight * scale) / 2;
+
+        imageCtx.drawImage(img, x, y, imgWidth * scale, imgHeight * scale);
+    };
+
+    function resizeCanvas() {
+        // 캔버스의 컨테이너 크기에 맞춰 캔버스 크기 조정
+        const container = document.querySelector("#canvasContainer");
+        canvas.width = container.clientWidth;
+        canvas.height = container.clientHeight;
+        imageCanvas.width = container.clientWidth;
+        imageCanvas.height = container.clientHeight;
+    }
+
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    let painting = false;
+
+    function stopPainting() {
+        painting = false;
+    }
+
+    function startPainting() {
+        painting = true;
+    }
+
+    ctx.lineWidth = 3;
+
+    let flowerImg = new Image();
+    //이미지 로딩을 시작한다.
+
+    const savedImage = localStorage.getItem('savedImage');  // 로컬스토리지에서 저장된 이미지를 호출
+    alert(savedImage);
+    if (savedImage) {
+        alert('YES image found in storage!');
+    } else {
+        alert('No image found in storage!');
+    }
+
+    flowerImg.src = savedImage;
+
+    slider.addEventListener('input', function() {
+        imgSize = this.value;
+        sliderValue.textContent = imgSize;
+    });
+
+    // onMouseMove 핸들러 수정
+    function onMouseMove(event) {
+        if (!isDrawing) return; // 선 그리기가 활성화되어 있지 않으면 아무것도 하지 않음
+        const x = event.offsetX;
+        const y = event.offsetY;
+
+        if (!painting) {
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+        } else {
+            ctx.lineTo(x, y);
+            ctx.stroke();
+        }
+    }
+
+    // canvas.onclick 핸들러 수정
+    canvas.onclick = function (event) {
+        if (!isAddingImage) return; // 이미지 삽입이 활성화되어 있지 않으면 아무것도 하지 않음
+
+        // 캔버스에서의 좌표 변수에 저장
+        const x = event.offsetX;
+        const y = event.offsetY;
+
+        // 클릭할 때마다 이미지 넣기. 클릭한 지점이 이미지의 정중앙
+        ctx.drawImage(flowerImg, x - imgSize / 2, y - imgSize / 2, imgSize, imgSize);
+        //ctx.drawImage(flowerImg, x - 40, y - 40, 200, 200);
+    };
+
+    // 버튼을 클릭하여 상태 변수를 변경합니다.
+    document.getElementById('drawBtn').addEventListener('click', function() {
+
+        if(isDrawing == false){
+            isDrawing = true;
+            isAddingImage = false;
+        }else{
+            isDrawing = false;
+            isAddingImage = true;
+        }
+    });
+
+
+    canvas.addEventListener("mousemove", onMouseMove);
+    canvas.addEventListener("mousedown", startPainting);
+    canvas.addEventListener("mouseup", stopPainting);
+    canvas.addEventListener("mouseleave", stopPainting);
+
+
+    const buttons = [
+        "red", "orange", "yellow", "green", "blue",
+        "navy", "purple", "black", "white", "clear", "fill"
+    ];
+    let lineColor = "black";
+
+    buttons.forEach((color) => {
+        const button = document.querySelector(`.${color}`);
+        button.style.background = (color === "clear" || color === "fill") ? "rgba(100,100,100,0.2)" : color;
+        button.onclick = () => {
+            ctx.strokeStyle = color;
+            lineColor = color;
+        };
+    });
+
+    document.querySelector(".clear").onclick = () => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    };
+
+    document.querySelector(".fill").onclick = () => {
+        ctx.fillStyle = lineColor;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+    };
+
+    // 그림을 다운로드
+    function downloadImage() {
+        const image = canvas.toDataURL('image/png');
+        const link = document.createElement('a');
+        link.href = image;
+        link.download = 'canvas-image.png';
+        link.click();
+    }
+
+    const downloadBtn = document.getElementById('downloadBtn');
+    downloadBtn.addEventListener('click', downloadImage);
+
+    // 그림을 서버로 전송
+    function sendImageToServer() {
+        const image = canvas.toDataURL('image/png');
+        const blob = dataURItoBlob(image);
+        const formData = new FormData();
+        formData.append('file', blob, 'canvas-image.png');
+
+        fetch('/spring/drawUpload', {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => {
+                if (response.ok) {
+                    window.location.href = '/spring/imageList';
+                } else {
+                    console.error('File upload failed');
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    }
+
+    function dataURItoBlob(dataURI) {
+        const byteString = atob(dataURI.split(',')[1]);
+        const mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+        const ab = new ArrayBuffer(byteString.length);
+        const ia = new Uint8Array(ab);
+        for (let i = 0; i < byteString.length; i++) {
+            ia[i] = byteString.charCodeAt(i);
+        }
+        return new Blob([ab], {type: mimeString});
+    }
+
+    const uploadBtn = document.getElementById('uploadBtn');
+    uploadBtn.addEventListener('click', sendImageToServer);
+    /*]]>*/
+</script>
+</body>
+</html>

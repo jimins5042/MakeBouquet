@@ -48,14 +48,29 @@ public class UploadController {
 
         log.info("=== 이미지 리스트 조회 ===");
         List<Image> list = imageMapper.findAll();
-        
+
+
+        ArrayList<String> link = new ArrayList<>();
+        for (Image image : list) {
+            link.add(image.getImageLink());
+        }
+        model.addAttribute("images", link);
+
+        return "flower/SelectFlowerPackage";
+
+    }
+
+    @GetMapping("/imageList/manage")
+    public String imageManageList(Model model) {
+
+        log.info("=== 이미지 리스트 관리 ===");
+        List<Image> list = imageMapper.findAll();
+
         model.addAttribute("items", list);
 
-        //model.addAttribute("images", link);
-
-        //return "flower/SelectFlowerPackge";
         return "imageList";
     }
+
 
     @GetMapping("/imageList/{id}")
     public String item(@PathVariable String id, Model model) {

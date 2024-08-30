@@ -8,11 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.multipart.MultipartFile;
 import personal.MakeBouquet.FlowerMapper;
-import personal.MakeBouquet.Image;
-import personal.MakeBouquet.MakingMyOwnBouquet.entity.FlowerEntity;
-import personal.MakeBouquet.MakingMyOwnBouquet.entity.FlowerPackageEntity;
 import personal.MakeBouquet.service.UploadService;
 
 import java.io.IOException;
@@ -27,7 +23,7 @@ public class DrawFlowerController {
 
     private final UploadService uploadService;
     private final FlowerMapper flowerMapper;
-    FlowerEntity flowerEntity = new FlowerEntity();
+    private String backgroundImageLink;
 
     @GetMapping("/draw")
     public String draw() {
@@ -35,15 +31,30 @@ public class DrawFlowerController {
     }
 
 
-    @PostMapping("/selectPackage")
-    public String uploadImage(@RequestParam("file") MultipartFile file, Model model) throws IOException {
-        flowerEntity.setFile(file);
+    @GetMapping("/selectPackage")
+    public String showPackageImage(Model model) throws IOException {
 
-        List<String> list = flowerMapper.selectAll();
+        List<String> images = flowerMapper.selectAll();
 
-        model.addAttribute("packages", list);
+        model.addAttribute("images", images);
 
-        return "showImage";
+        return "flower/SelectFlowerPackage";
+    }
+
+    @GetMapping("/decorate")
+    public String decorateBouquet(Model model) {
+
+        model.addAttribute("backgroundImage", backgroundImageLink);
+
+        return "flower/decorateBouquet";
+    }
+
+    @PostMapping("/decorate")
+    public String  decorateBouquet1(@RequestParam String image) throws IOException {
+        log.info("image={}", image);
+        backgroundImageLink = image;
+
+        return "flower/decorateBouquet";
     }
 
 }

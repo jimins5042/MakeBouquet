@@ -183,34 +183,14 @@
 
     //꽃 사진 전달
     function sendImageToServer() {
-        const image = canvas.toDataURL('image/png');
-        const blob = dataURItoBlob(image);
-        const formData = new FormData();
-        formData.append('file', blob, 'canvas-image.png');
 
-        fetch('/spring/drawUpload', {
-            method: 'POST',
-            body: formData
-        })
-            .then(response => {
-                if (response.ok) {
-                    window.location.href = '/spring/imageList';
-                } else {
-                    console.error('File upload failed');
-                }
-            })
-            .catch(error => console.error('Error:', error));
-    }
+        const dataURL = canvas.toDataURL();  // Get the data URL of the canvas image
+        alert(dataURL);
+        localStorage.removeItem('savedImage')
+        localStorage.setItem('savedImage', dataURL);  // Save it to localStorage
+        alert('Image saved!');
+        window.location.href = '/flower/selectPackage';
 
-    function dataURItoBlob(dataURI) {
-        const byteString = atob(dataURI.split(',')[1]);
-        const mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
-        const ab = new ArrayBuffer(byteString.length);
-        const ia = new Uint8Array(ab);
-        for (let i = 0; i < byteString.length; i++) {
-            ia[i] = byteString.charCodeAt(i);
-        }
-        return new Blob([ab], {type: mimeString});
     }
 
     const uploadBtn = document.getElementById('uploadBtn');
