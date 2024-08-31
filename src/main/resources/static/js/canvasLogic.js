@@ -192,17 +192,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
     function switchDrawMode(pageId) {
-        if (isDrawing == false && page == pageId) {
+        if ((isDrawing == false && page == pageId) || pageId == 0) {
             page = 0;
             isDrawing = true;
             isAddingImage = false;
             console.log("하이라이트 꺼짐 확인");
 
-            thumbnails.forEach(thumbnail => {
-                thumbnail.classList.remove('thumbnail-highlight');
-            });
-        }
-        else if(isDrawing == true && page == 0){
             thumbnails.forEach(thumbnail => {
                 thumbnail.classList.remove('thumbnail-highlight');
             });
