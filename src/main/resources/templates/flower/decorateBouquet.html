@@ -10,43 +10,18 @@
     <link href="/static/css/canvas.css" rel="stylesheet" />
     <style>
 
-        #thumbnailSliderContainer {
-            position: absolute;
-            right: -150px;
-            top: calc(100%); /* 슬라이더 위치를 조정 */
-            transform: translateY(-50%);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 140px;
-        }
-
-        #thumbnailSliderContainer input[type="range"] {
+        #thumbnailContainer input[type="range"] {
             width: 100%;
             margin: 10px 0;
         }
 
-        #thumbnailContainer {
-            position: absolute;
-            right: -180px;
-            top: 50%;
-            transform: translateY(-50%);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            max-width: 140px;
-            height: auto;
+        #sizeSlider {
+            width: 100%;
+            margin: 10px 0;
         }
 
-        #thumbnailContainer img {
-            width: 100px;
-            height: 100px;
-            object-fit: cover;
-            margin: 10px 0;
-            border: 2px solid #ccc;
-            border-radius: 5px;
-        }
     </style>
+
 </head>
 <body class="d-flex flex-column align-items-center justify-content-center">
 
@@ -68,11 +43,13 @@
             <span class="white">white</span>
             <span class="clear">clear</span>
             <span class="fill">fill</span>
-            <span class="undo">실행취소</span>
+            <span class="undo">취소</span>
             <span class="redo">복구</span>
+            <span class="drawBtn">선 긋기</span>
 
-            <button id="drawBtn" class="btn btn-primary">이미지 삽입 활성화/비활성화</button>
+
         </div>
+
         <div id="lineWidthSlider">
 
             <input type="range" min="1" max="20" value="3" class="slider">
@@ -80,14 +57,12 @@
         </div>
 
 
-        <div id="thumbnailSliderContainer">
+        <div id="thumbnailContainer">
+            <!-- 여기서 섬네일 이미지들이 보여질 예정 -->
+            <div id="thumbnails"></div>
 
             <input id="sizeSlider" type="range" min="50" max="300" value="200">
             <p> Size: <span id="imgSliderValue">200</span> px </p>
-        </div>
-
-        <div id="thumbnailContainer">
-            <!-- 여기서 섬네일 이미지들이 보여질 예정 -->
         </div>
     </div>
 
@@ -102,7 +77,7 @@
 </div>
 
 <script th:inline="javascript">
-    var myValue = /*[[@{${backgroundImage}}]]*/ '';
+    let myValue = /*[[@{${backgroundImage}}]]*/ '';
 </script>
 
 <!-- Bootstrap JS and dependencies -->

@@ -58,26 +58,96 @@ document.addEventListener('DOMContentLoaded', function () {
         imgSliderValue.textContent = imgSize;
     });
 
+
     // 로컬스토리지에서 저장된 이미지를 호출
-    const savedImage = localStorage.getItem('savedImage');
-    let flowerImg = new Image();
-    if (savedImage) {
-        flowerImg.src = savedImage;
-        displayThumbnail(savedImage); // 섬네일 보여주기
-    } else {
-        alert('No image found in storage!');
+    const storageKeys = ["savedImage1", "savedImage2", "savedImage3"];
+
+    for (let i = 0; i < storageKeys.length; i++) {
+        const imageData = localStorage.getItem(storageKeys[i]);
+        if (imageData) {
+            displayThumbnail(imageData); // 슬롯 인덱스를 전달
+        } else {
+            const emptyCanvasDataURL = getEmptyImageDataURL();
+            displayThumbnail(emptyCanvasDataURL); // 슬롯 인덱스를 전달
+        }
+
     }
+
 
     // 로컬스토리지에서 저장된 이미지를 썸네일 형식으로 표시
     function displayThumbnail(imageData) {
-        const thumbnailContainer = document.getElementById('thumbnailContainer');
+        const thumbnailContainer = document.getElementById('thumbnails');
         const imgElement = document.createElement('img');
         imgElement.src = imageData;
+
+        // 이미지 클릭 시 동작할 기능을 연결
+        imgElement.addEventListener('click', function () {
+            updateHighlight(imgElement); // 클릭된 썸네일에 하이라이트 추가
+            performActionBasedOnImage(imageData);
+
+        });
+
         thumbnailContainer.appendChild(imgElement);
     }
+    //만약 슬롯이 비어있을 경우, 빈 화면을 출력
+    function getEmptyImageDataURL() {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = 150; // 썸네일의 너비
+        canvas.height = 150; // 썸네일의 높이
+        ctx.fillStyle = '#ffffff00'; // 배경색 (흰색)
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        return canvas.toDataURL('image/png');
+    }
+
+    // 이미지 데이터에 따라 다른 기능 수행
+
+    function performActionBasedOnImage(imageData) {
+
+        const savedImage1 = localStorage.getItem('savedImage1');
+        const savedImage2 = localStorage.getItem('savedImage2');
+        const savedImage3 = localStorage.getItem('savedImage3');
+        console.log(page);
+        if (imageData === savedImage1) {
+            console.log("1번 이미지 선택");
+            flowerImg.src = savedImage1;
+            switchDrawMode(1);
+
+        } else if (imageData === savedImage2) {
+            console.log("2번 이미지 선택");
+            flowerImg.src = savedImage2;
+            switchDrawMode(2);
+
+        } else if (imageData === savedImage3) {
+            console.log("3번 이미지 선택");
+            flowerImg.src = savedImage3;
+            switchDrawMode(3);
+
+        } else {
+            switchDrawMode(0);
+        }
+    }
+
+    // 섬네일 하이라이트 지정
+    const thumbnails = document.querySelectorAll('#thumbnails img');
+
+    function updateHighlight(selectedThumbnail) {
+
+        // 모든 썸네일에서 하이라이트 제거
+        thumbnails.forEach(thumbnail => {
+            thumbnail.classList.remove('thumbnail-highlight');
+        });
+
+        // 선택된 썸네일에 하이라이트 추가
+        selectedThumbnail.classList.add('thumbnail-highlight');
+    }
+
 
     // === 그림 관련 설정 ===
     let painting = false;
+    let flowerImg = new Image();
+    flowerImg.src = localStorage.getItem('savedImage1');
+    let page = 0;
 
     ctx.lineWidth = 3;  //펜선 굵기
     //펜선 굵기 슬라이드바 로직
@@ -120,15 +190,29 @@ document.addEventListener('DOMContentLoaded', function () {
         ctx.drawImage(flowerImg, x - imgSize / 2, y - imgSize / 2, imgSize, imgSize);
     };
 
-    document.getElementById('drawBtn').addEventListener('click', function () {
-        if (isDrawing == false) {
+
+    function switchDrawMode(pageId) {
+        if (isDrawing == false && page == pageId) {
+            page = 0;
             isDrawing = true;
             isAddingImage = false;
-        } else {
+            console.log("하이라이트 꺼짐 확인");
+
+            thumbnails.forEach(thumbnail => {
+                thumbnail.classList.remove('thumbnail-highlight');
+            });
+        }
+        else if(isDrawing == true && page == 0){
+            thumbnails.forEach(thumbnail => {
+                thumbnail.classList.remove('thumbnail-highlight');
+            });
+        }
+        else {
+            page = pageId;
             isDrawing = false;
             isAddingImage = true;
         }
-    });
+    }
 
     canvas.addEventListener("mousemove", onMouseMove);
     canvas.addEventListener("mousedown", startPainting);
@@ -170,6 +254,17 @@ document.addEventListener('DOMContentLoaded', function () {
         restoreState(redoStack, undoStack);
     };
 
+    document.querySelector(".drawBtn").onclick = () => {
+
+        isDrawing = true;
+        isAddingImage = false;
+
+        thumbnails.forEach(thumbnail => {
+            thumbnail.classList.remove('thumbnail-highlight');
+        });
+
+    };
+
     // 실행 취소/복구 기능
     let undoStack = [];
     let redoStack = [];
@@ -194,6 +289,7 @@ document.addEventListener('DOMContentLoaded', function () {
             img.src = imgData;
             img.onload = () => {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.drawImage(img, 0, 0);
                 ctx.drawImage(img, 0, 0);
             };
         }

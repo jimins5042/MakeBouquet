@@ -63,3 +63,30 @@ canvas {
 #lineWidthSlider input[type="range"] {
     margin: 10px;
 }
+
+#thumbnailContainer {
+    position: absolute;
+    right: -180px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 140px;
+    height: auto;
+}
+
+#thumbnailContainer img {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    margin: 10px 0;
+    border: 2px solid #ccc;
+    border-radius: 5px;
+    cursor: pointer; /* 클릭 가능하게 */
+}
+
+.thumbnail-highlight {
+    border: 2px solid #007bff; /* 하이라이트 색상 (예: 파란색) */
+    box-shadow: 0 0 10px rgba(0, 123, 255, 0.5); /* 하이라이트 효과 */
+}
