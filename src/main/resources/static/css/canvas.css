@@ -17,7 +17,7 @@ canvas {
 
 #palette {
     position: absolute;
-    left: -150px; /* 버튼들을 캔버스 왼쪽으로 이동 */
+    left: -170px; /* 버튼들을 캔버스 왼쪽으로 이동 */
     top: 50%; /* 세로 중앙 정렬 */
     transform: translateY(-50%); /* 중앙 정렬 보정 */
     display: flex;
@@ -50,7 +50,7 @@ canvas {
 
 #lineWidthSlider {
     position: absolute;
-    left: -150px;
+    left: -170px;
     top: calc(100%); /* 슬라이더 위치를 조정 */
     transform: translateY(-50%);
     display: flex;

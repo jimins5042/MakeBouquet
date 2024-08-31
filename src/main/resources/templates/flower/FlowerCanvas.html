@@ -243,6 +243,14 @@
 
     function loadDrawing(slotIndex) {
 
+        if(undoStack.length != 0 || redoStack.length !=0){
+            let checkBeforeLoad = confirm("그림이 저장되지 않았습니다. 그림을 저장할까요?");
+
+            if(checkBeforeLoad == true){
+                saveDrawing();
+            }
+        }
+
         console.log("로딩");
         currentPage = slotIndex;
         const dataURL = localStorage.getItem(storageKeys[slotIndex]);
@@ -261,12 +269,6 @@
     }
 
     document.getElementById('saveBtn').addEventListener('click', saveDrawing);
-    /*
-    document.getElementById('loadBtn1').addEventListener('click', () => loadDrawing(0));
-    document.getElementById('loadBtn2').addEventListener('click', () => loadDrawing(1));
-    document.getElementById('loadBtn3').addEventListener('click', () => loadDrawing(2));
-
-     */
 
     window.addEventListener('load', () => {
         initializationSave();
