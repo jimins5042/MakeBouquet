@@ -41,6 +41,7 @@ public class DrawFlowerController {
         return "flower/SelectFlowerPackage";
     }
 
+
     @GetMapping("/decorate")
     public String decorateBouquet(Model model) {
 
@@ -50,7 +51,7 @@ public class DrawFlowerController {
     }
 
     @PostMapping("/decorate")
-    public String  decorateBouquet1(@RequestParam String image) throws IOException {
+    public String decorateBouquet1(@RequestParam String image) throws IOException {
         log.info("image={}", image);
         backgroundImageLink = image;
 

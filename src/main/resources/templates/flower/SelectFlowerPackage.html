@@ -61,16 +61,18 @@
 
 <script>
     function showLargeImage(element) {
-        var largeImage = document.getElementById('largeImage');
+        const largeImage = document.getElementById('largeImage');
+
         largeImage.src = element.src;
     }
 
     function redirectToPage() {
-        var largeImage = document.getElementById('largeImage');
-        var imageUrl = largeImage.src;
+        const largeImage = document.getElementById('largeImage');
+
+        const imageUrl = largeImage.src;
 
         // FormData 객체에 이미지 URL을 담기
-        var formData = new FormData();
+        const formData = new FormData();
         formData.append('image', imageUrl);
 
         fetch('/flower/decorate', {
@@ -85,7 +87,6 @@
                 }
             })
             .catch(error => console.error('Error:', error));
-
     }
 
     const storageKeys = ["savedImage1", "savedImage2", "savedImage3"];

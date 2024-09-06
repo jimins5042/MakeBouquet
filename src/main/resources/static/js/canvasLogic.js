@@ -292,6 +292,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     //=== 파일 관리 ===
     //이미지 다운로드
+
+    /*
     function downloadImage() {
         const image = canvas.toDataURL('image/png');
         const link = document.createElement('a');
@@ -302,6 +304,57 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const downloadBtn = document.getElementById('downloadBtn');
     downloadBtn.addEventListener('click', downloadImage);
+
+     */
+
+
+
+    function mergeAndDownloadImage() {
+        // 결합할 새로운 캔버스 생성
+        const mergedCanvas = document.createElement('canvas');
+        const mergedCtx = mergedCanvas.getContext('2d');
+
+        // 기존의 캔버스 크기로 새 캔버스 크기 설정
+        mergedCanvas.width = imageCanvas.width;
+        mergedCanvas.height = imageCanvas.height;
+
+        const url = `/s3-image?imageId=${encodeURIComponent(myValue)}`;
+        // 먼저 imageCanvas 내용을 그린다.
+        fetch(url)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok.');
+                }
+                return response.blob(); // 이미지 데이터를 Blob 형태로 변환
+            })
+            .then(blob => {
+                const img = new Image();
+                img.src = URL.createObjectURL(blob); // Blob URL 생성
+                img.onload = () => {
+                    console.log(img.src);
+                    // 이미지가 로드된 후의 처리
+
+                    mergedCtx.drawImage(img, 0,0, mergedCanvas.width, mergedCanvas.height);
+                    //document.getElementById('imageCanvas').getContext('2d').drawImage(img, 0, 0);
+                    URL.revokeObjectURL(img.src); // 메모리 해제
+
+                    // 그 위에 canvas 내용을 덧붙여 그린다.
+                    mergedCtx.drawImage(canvas, 0, 0);
+
+                    // 결합된 이미지 데이터를 PNG로 저장
+                    const image = mergedCanvas.toDataURL('image/png');
+                    const link = document.createElement('a');
+                    link.href = image;
+                    link.download = 'merged-canvas-image.png';
+                    link.click();
+                };
+            })
+            .catch(error => console.error('Error fetching image:', error));
+    }
+
+
+    const downloadBtn = document.getElementById('downloadBtn');
+    downloadBtn.addEventListener('click', mergeAndDownloadImage);
 
     //이미지 서버에 업로드
     function sendImageToServer() {
