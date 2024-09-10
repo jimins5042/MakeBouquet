@@ -293,22 +293,6 @@ document.addEventListener('DOMContentLoaded', function () {
     //=== 파일 관리 ===
     //이미지 다운로드
 
-    /*
-    function downloadImage() {
-        const image = canvas.toDataURL('image/png');
-        const link = document.createElement('a');
-        link.href = image;
-        link.download = 'canvas-image.png';
-        link.click();
-    }
-
-    const downloadBtn = document.getElementById('downloadBtn');
-    downloadBtn.addEventListener('click', downloadImage);
-
-     */
-
-
-
     function mergeAndDownloadImage() {
         // 결합할 새로운 캔버스 생성
         const mergedCanvas = document.createElement('canvas');
@@ -333,9 +317,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 img.onload = () => {
                     console.log(img.src);
                     // 이미지가 로드된 후의 처리
-
                     mergedCtx.drawImage(img, 0,0, mergedCanvas.width, mergedCanvas.height);
-                    //document.getElementById('imageCanvas').getContext('2d').drawImage(img, 0, 0);
                     URL.revokeObjectURL(img.src); // 메모리 해제
 
                     // 그 위에 canvas 내용을 덧붙여 그린다.
