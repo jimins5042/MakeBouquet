@@ -8,10 +8,22 @@
     <link th:href="@{/css/canvas.css}" rel="stylesheet"/>
     <link href="/static/css/canvas.css" rel="stylesheet"/>
     <style>
-
+        #thumbnailContainer {
+            position: absolute;
+            right: -200px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 170px;
+            /*height: auto;*/
+            height: 600px;
+            overflow-y:auto;
+        }
     </style>
 </head>
-<body>
+
 
 <body class="d-flex flex-column align-items-center justify-content-center">
 
@@ -20,7 +32,7 @@
         <canvas id="canvas" th:src="@{${images[0]}}"></canvas>
 
         <div id="thumbnailContainer">
-            <div id="thumbnails">
+            <div id="thumbnails" class="d-flex flex-wrap">
                 <div th:each="image : ${images}">
                     <img th:src="@{${image}}" th:alt="'Image ' + ${image}" onclick="showLargeImage(this)">
                 </div>

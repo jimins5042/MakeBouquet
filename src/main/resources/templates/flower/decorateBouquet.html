@@ -6,11 +6,30 @@
     <title>그림 그리기</title>
     <!-- Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <link th:href="@{/css/canvas.css}" rel="stylesheet" />
-    <link href="/static/css/canvas.css" rel="stylesheet" />
+    <link th:href="@{/css/canvas.css}" rel="stylesheet"/>
+    <link href="/static/css/canvas.css" rel="stylesheet"/>
     <style>
+        /*
+                #sizeSlider {
+                    position: absolute;
+                    right: -190px;
+                    top: calc(100%);
+                    transform: translateY(-50%);
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    width: 150px;
+                    margin: 20px auto;
+                }
 
-        #thumbnailContainer input[type="range"] {
+                #sizeSlider input[type="range"] {
+                    width: 150px;
+                    margin-bottom: 10px;
+                }
+
+         */
+
+        #sizeSlider input[type="range"] {
             width: 100%;
             margin: 10px 0;
         }
@@ -18,6 +37,18 @@
         #sizeSlider {
             width: 100%;
             margin: 10px 0;
+        }
+
+        #thumbnailContainer {
+            position: absolute;
+            right: -190px;
+            top: 50%;
+            transform: translateY(-45%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 150px;
+            height: auto;
         }
 
     </style>
@@ -63,7 +94,13 @@
 
             <input id="sizeSlider" type="range" min="50" max="300" value="200">
             <p> Size: <span id="imgSliderValue">200</span> px </p>
+
         </div>
+
+        <!--div id="sizeSlider">
+            <input  type="range" min="50" max="300" value="200">
+            <p> Size: <span id="imgSliderValue">200</span> px </p>
+        </div-->
     </div>
 
     <div class="row mt-3">

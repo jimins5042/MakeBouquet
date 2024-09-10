@@ -2,7 +2,8 @@
     position: relative;
     width: 600px; /* 고정된 가로 길이 */
     height: 600px; /* 고정된 세로 길이 */
-    margin: 0 auto; /* 가로 중앙 정렬 */
+    margin: 20px auto; /* 가로 중앙 정렬 */
+    top: calc(0%); /* 슬라이더 위치를 조정 */
 }
 
 canvas {
@@ -35,7 +36,7 @@ canvas {
     text-shadow: 1px 0 black, 0 1px black, 1px 0 black, 0 -1px gray;
     line-height: 40px;
     text-align: center;
-    width: 60px;  /* 크기를 줄여서 두 줄로 배치 가능하게 만듭니다 */
+    width: 60px; /* 크기를 줄여서 두 줄로 배치 가능하게 만듭니다 */
     height: 60px; /* 크기를 줄여서 두 줄로 배치 가능하게 만듭니다 */
     border-radius: 20px;
     border: 4px solid rgba(129, 101, 101, 0.151);
@@ -66,15 +67,16 @@ canvas {
 
 #thumbnailContainer {
     position: absolute;
-    right: -180px;
+    right: -190px;
     top: 50%;
     transform: translateY(-50%);
     display: flex;
     flex-direction: column;
     align-items: center;
-    max-width: 140px;
+    max-width: 150px;
     height: auto;
 }
+
 
 #thumbnailContainer img {
     width: 150px;
