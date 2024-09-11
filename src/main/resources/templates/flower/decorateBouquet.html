@@ -94,20 +94,11 @@
     </div>
 </div>
 
-<script th:inline="javascript">
-    let myValue = /*[[@{${backgroundImage}}]]*/ '';
-</script>
-
-<!-- Bootstrap JS and dependencies -->
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.6/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-
 <script src="/js/canvasLogic.js"></script>
 <script src="/js/drawCanvas.js"></script>
 
-
-<script>
+<script th:inline="javascript">
+    let myValue = /*[[@{${backgroundImage}}]]*/ '';
     let painting = false;
 
     // 실행 취소/복구 기능
@@ -120,8 +111,8 @@
 
     const canvas = document.querySelector("#canvas");
     const ctx = canvas.getContext("2d");
-
 </script>
+
 
 <script src="/static/js/drawCanvas.js"></script>
 <script src="/static/js/canvasLogic.js"></script>

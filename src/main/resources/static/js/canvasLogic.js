@@ -194,58 +194,45 @@ document.addEventListener('DOMContentLoaded', function () {
                 const mergedCanvas = document.createElement('canvas');
                 const mergedCtx = mergedCanvas.getContext('2d');
 
-                const url = `/s3-image?imageId=${encodeURIComponent(myValue)}`;
+                const img = new Image();
+                img.crossOrigin = "anonymous";
+                img.src = myValue + "?v=" + new Date().getTime();
 
-                // 먼저 이미지의 크기를 유지하기 위해 이미지를 가져온다.
-                fetch(url)
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Network response was not ok.');
-                        }
-                        return response.blob(); // 이미지 데이터를 Blob 형태로 변환
-                    })
-                    .then(blob => {
-                        const img = new Image();
-                        img.src = URL.createObjectURL(blob); // Blob URL 생성
-                        img.onload = () => {
-                            console.log(img.src);
+                img.onload = () => {
+                    console.log("crossOrigin 수정 = {}" + img.src);
 
-                            // 이미지 크기를 기반으로 새 캔버스 크기를 설정
-                            mergedCanvas.width = img.width;
-                            mergedCanvas.height = img.height;
+                    // 이미지 크기를 기반으로 새 캔버스 크기를 설정
+                    mergedCanvas.width = img.width;
+                    mergedCanvas.height = img.height;
 
-                            // 이미지를 그대로 캔버스에 그리기
-                            mergedCtx.drawImage(img, 0, 0, img.width, img.height);
-                            URL.revokeObjectURL(img.src); // 메모리 해제
+                    // 이미지를 그대로 캔버스에 그리기
+                    mergedCtx.drawImage(img, 0, 0, img.width, img.height);
+                    URL.revokeObjectURL(img.src); // 메모리 해제
 
-                            // canvas 내용을 이미지 크기에 맞게 확대해서 그린다.
+                    // canvas 내용을 이미지 크기에 맞게 확대해서 그린다.
 
-                            const scale = Math.max(img.width / canvas.width, img.height / canvas.height);
+                    const scale = Math.max(img.width / canvas.width, img.height / canvas.height);
 
-                            // 확대된 canvas 크기 계산
-                            const newCanvasWidth = canvas.width * scale;
-                            const newCanvasHeight = canvas.height * scale;
+                    // 확대된 canvas 크기 계산
+                    const newCanvasWidth = canvas.width * scale;
+                    const newCanvasHeight = canvas.height * scale;
 
-                            // canvas를 이미지의 중앙에 배치
-                            const offsetX = (img.width - newCanvasWidth) / 2;
-                            const offsetY = (img.height - newCanvasHeight) / 2;
+                    // canvas를 이미지의 중앙에 배치
+                    const offsetX = (img.width - newCanvasWidth) / 2;
+                    const offsetY = (img.height - newCanvasHeight) / 2;
 
-                            // 기존 canvas 내용을 비율에 맞게 확대한 후 중앙에 맞춰 그리기
-                            mergedCtx.drawImage(canvas, offsetX, offsetY, newCanvasWidth, newCanvasHeight);
+                    // 기존 canvas 내용을 비율에 맞게 확대한 후 중앙에 맞춰 그리기
+                    mergedCtx.drawImage(canvas, offsetX, offsetY, newCanvasWidth, newCanvasHeight);
 
-                            // 결합된 이미지 데이터를 PNG로 저장하고 resolve
-                            const mergedImageDataURL = mergedCanvas.toDataURL('image/png');
-                            resolve(mergedImageDataURL);
-                        };
+                    // 결합된 이미지 데이터를 PNG로 저장하고 resolve
+                    const mergedImageDataURL = mergedCanvas.toDataURL('image/png');
+                    resolve(mergedImageDataURL);
+                };
 
-                        img.onerror = (error) => {
-                            reject(error); // 이미지 로드 중 오류 발생 시 reject
-                        };
-                    })
-                    .catch(error => {
-                        console.error('Error fetching image:', error);
-                        reject(error); // 오류 발생 시 Promise reject
-                    });
+                img.onerror = (error) => {
+                    reject(error); // 이미지 로드 중 오류 발생 시 reject
+                };
+
             });
         }
 
@@ -312,3 +299,5 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 )
 ;
+
+
