@@ -1,9 +1,5 @@
 document.addEventListener('DOMContentLoaded', function () {
 
-        let isDrawing = true; // 기본적으로 선 그리기 활성화
-        let isAddingImage = false; // 이미지 삽입 비활성화
-        let isSave = 0; //그림의 저장 여부 판단
-
         //=== 캔버스 관련 설정 ===
 
         //꽃다발 패키지 사진을 보여주는 canvas 설정
@@ -11,8 +7,8 @@ document.addEventListener('DOMContentLoaded', function () {
         const imageCtx = imageCanvas.getContext('2d');
 
         //꽃다발을 꾸미는 캔버스
-        const canvas = document.querySelector("#canvas");
-        const ctx = canvas.getContext("2d");
+        //const canvas = document.querySelector("#canvas");
+        //const ctx = canvas.getContext("2d");
 
         // 백그라운드 이미지 URL 설정 - html 파일에서 값 받아옴
         const img = new Image();
@@ -148,45 +144,10 @@ document.addEventListener('DOMContentLoaded', function () {
             selectedThumbnail.classList.add('thumbnail-highlight');
         }
 
-
-        // === 그림 관련 설정 ===
-        let painting = false;
+        //임시
         let flowerImg = new Image();
         flowerImg.src = localStorage.getItem('savedImage1');
         let page = 0;
-
-        ctx.lineWidth = 3;  //펜선 굵기
-        //펜선 굵기 슬라이드바 로직
-        const lineWidthSlider = document.getElementById('lineWidthSlider');
-        lineWidthSlider.addEventListener('input', (event) => {
-            ctx.lineWidth = event.target.value;
-            sliderValue.textContent = event.target.value;
-        });
-
-        function stopPainting() {
-            painting = false;
-            isSave = 0;
-        }
-
-        function startPainting() {
-            painting = true;
-        }
-
-
-        function onMouseMove(event) {
-            if (!isDrawing) return; // 선 그리기가 활성화되어 있지 않으면 아무것도 하지 않음
-            const x = event.offsetX;
-            const y = event.offsetY;
-
-            if (!painting) {
-                ctx.beginPath();
-                ctx.moveTo(x, y);
-            } else {
-                ctx.lineTo(x, y);
-                ctx.stroke();
-            }
-        }
-
         canvas.onclick = function (event) {
             if (!isAddingImage) return; // 이미지 삽입이 활성화되어 있지 않으면 아무것도 하지 않음
 
@@ -195,7 +156,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
             ctx.drawImage(flowerImg, x - imgSize / 2, y - imgSize / 2, imgSize, imgSize);
         };
-
 
         function switchDrawMode(pageId) {
             if ((isDrawing == false && page == pageId) || pageId == 0) {
@@ -214,46 +174,6 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
 
-        canvas.addEventListener("mousemove", onMouseMove);
-        canvas.addEventListener("mousedown", startPainting);
-        canvas.addEventListener("mousedown", saveState);
-        canvas.addEventListener("mouseup", stopPainting);
-        canvas.addEventListener("mouseleave", stopPainting);
-
-        const buttons = [
-            "red", "orange", "yellow", "green", "blue",
-            "navy", "purple", "black", "white", "clear",
-            "fill", "undo", "redo"
-        ];
-        let lineColor = "black";
-
-        buttons.forEach((color) => {
-            const button = document.querySelector(`.${color}`);
-            button.style.background = (color === "clear" || color === "fill") ? "rgba(100,100,100,0.2)" : color;
-            button.onclick = () => {
-                ctx.strokeStyle = color;
-                lineColor = color;
-            };
-        });
-
-        document.querySelector(".clear").onclick = () => {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-        };
-
-        document.querySelector(".fill").onclick = () => {
-            ctx.fillStyle = lineColor;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-        };
-
-        document.querySelector(".undo").onclick = () => {
-            console.log(undoStack.length);
-            restoreState(undoStack, redoStack);
-        };
-
-        document.querySelector(".redo").onclick = () => {
-            restoreState(redoStack, undoStack);
-        };
-
         document.querySelector(".drawBtn").onclick = () => {
 
             isDrawing = true;
@@ -264,36 +184,6 @@ document.addEventListener('DOMContentLoaded', function () {
             });
 
         };
-
-        // 실행 취소/복구 기능
-        let undoStack = [];
-        let redoStack = [];
-
-        function saveState() {
-
-            if (isSave == 0) {
-                console.log(undoStack.length);
-                console.log("저장")
-                isSave = 1;
-                undoStack.push(canvas.toDataURL());
-            }
-            //redoStack = []; // 새로운 작업이 발생하면 redoStack 초기화
-        }
-
-
-        function restoreState(stack, oppositeStack) {
-            if (stack.length > 0) {
-                oppositeStack.push(canvas.toDataURL());
-                const imgData = stack.pop();
-                const img = new Image();
-                img.src = imgData;
-                img.onload = () => {
-                    ctx.clearRect(0, 0, canvas.width, canvas.height);
-                    ctx.drawImage(img, 0, 0);
-                    ctx.drawImage(img, 0, 0);
-                };
-            }
-        }
 
         //=== 파일 관리 ===
 
@@ -361,7 +251,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
         async function downloadImage() {
             try {
+                console.time();
                 const image = await mergeCanvas();
+                console.timeEnd();
                 console.log("비동기 -> 동기");
                 const link = document.createElement('a');
                 link.href = image;

@@ -27,7 +27,7 @@ public class UploadController {
 
     @GetMapping("/upload")
     public String newFile() {
-        return "upload-form";
+        return "upload/upload-form";
     }
 
     @PostMapping("/upload")
@@ -40,7 +40,7 @@ public class UploadController {
 
         model.addAttribute("imageLink", image.getImageLink());
 
-        return "showImage";
+        return "upload/showImage";
     }
 
     @GetMapping("/imageList")
@@ -68,7 +68,7 @@ public class UploadController {
 
         model.addAttribute("items", list);
 
-        return "imageList";
+        return "upload/imageList";
     }
 
 
@@ -82,7 +82,7 @@ public class UploadController {
         log.info("itemId={}, imageLink={}", id, imageLink);
         model.addAttribute("imageLink", imageLink);
 
-        return "showImage";
+        return "upload/showImage";
     }
 
     @GetMapping("/imageList/delete/{id}")

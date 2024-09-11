@@ -25,7 +25,7 @@ public class DrawController {
     @GetMapping("/draw")
     public String draw() {
 
-        return "Canvas";
+        return "upload/Canvas";
     }
 
 
@@ -36,7 +36,7 @@ public class DrawController {
 
         model.addAttribute("imageLink", image.getImageLink());
 
-        return "showImage";
+        return "upload/showImage";
     }
 
 }
