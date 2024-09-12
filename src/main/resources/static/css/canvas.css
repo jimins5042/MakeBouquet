@@ -40,8 +40,13 @@ canvas {
     height: 60px; /* 크기를 줄여서 두 줄로 배치 가능하게 만듭니다 */
     border-radius: 20px;
     border: 4px solid rgba(129, 101, 101, 0.151);
-    box-shadow: 1px 2px 2px gray;
+    box-shadow: 2px 3px 3px gray;
+    /* box-shadow: 1px 2px 2px gray; */
     margin: 5px;
+    transition-duration: 0.3s;
+}
+#palette span:active {
+    box-shadow: 0 0 10px rgb(255, 255, 255);
 }
 
 .clear, .fill, .undo, .redo {
@@ -91,4 +96,10 @@ canvas {
 .thumbnail-highlight {
     border: 2px solid #007bff; /* 하이라이트 색상 (예: 파란색) */
     box-shadow: 0 0 10px rgba(0, 123, 255, 0.5); /* 하이라이트 효과 */
+}
+
+.highlight {
+    /* 우선순위 높여 버튼에 적용된 그림자 효과를 변경 */
+    box-shadow: 0 0 10px rgb(255, 255, 255) !important;
+
 }

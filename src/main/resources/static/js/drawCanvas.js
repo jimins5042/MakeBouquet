@@ -45,12 +45,23 @@ document.addEventListener('DOMContentLoaded', function () {
     ];
     let lineColor = "black";
 
+    let selectedButton = null; // 현재 선택된 버튼을 추적
+
     buttons.forEach((color) => {
         const button = document.querySelector(`.${color}`);
         button.style.background = (color === "clear" || color === "fill") ? "rgba(100,100,100,0.2)" : color;
         button.onclick = () => {
             ctx.strokeStyle = color;
             lineColor = color;
+
+            if (selectedButton) {
+                console.log(selectedButton);
+                selectedButton.classList.remove('highlight');
+            }
+
+            // 현재 선택된 버튼에 하이라이트 추가
+            button.classList.add('highlight');
+            selectedButton = button;
         };
     });
 
@@ -72,16 +83,6 @@ document.addEventListener('DOMContentLoaded', function () {
         restoreState(redoStack, undoStack);
     };
 
-    document.querySelector(".drawBtn").onclick = () => {
-
-        isDrawing = true;
-        isAddingImage = false;
-
-        thumbnails.forEach(thumbnail => {
-            thumbnail.classList.remove('thumbnail-highlight');
-        });
-
-    };
 
     function saveState() {
 

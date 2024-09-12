@@ -19,7 +19,7 @@
             max-width: 170px;
             /*height: auto;*/
             height: 600px;
-            overflow-y:auto;
+            overflow-y: auto;
         }
     </style>
 </head>
@@ -56,6 +56,15 @@
     //꽃다발을 꾸미는 캔버스
     const canvas = document.querySelector("#canvas");
     const ctx = canvas.getContext("2d");
+
+    /*
+    window.onload = function () {
+        const firstImageElement = document.querySelector("#thumbnails img");
+        if (firstImageElement) {
+            showLargeImage(firstImageElement);
+        }
+    };
+     */
 
     // 백그라운드 이미지 URL 설정 - html 파일에서 값 받아옴
     const img = new Image();

@@ -51,7 +51,7 @@
             <button id="downloadBtn" class="btn btn-primary">Download Image</button>
         </div>
         <div class="col-6 text-left">
-            <button id="uploadBtn" class="btn btn-success">Upload Image</button>
+            <button id="uploadBtn" class="btn btn-success">다음 페이지로 넘어가기</button>
         </div>
     </div>
 
@@ -61,7 +61,7 @@
 <script src="/js/drawCanvas.js"></script>
 
 <script>
-    //임시
+    //전역변수 들
 
     let painting = false;
 
@@ -99,7 +99,11 @@
     downloadBtn.addEventListener('click', downloadImage);
 
     function sendImageToServer() {
-        window.location.href = '/flower/selectPackage';
+        if (beforeMoveToNextPage()) {
+            window.location.href = '/flower/selectPackage';
+        } else {
+            alert("저장된 이미지가 없습니다!");
+        }
     }
 
     const uploadBtn = document.getElementById('uploadBtn');
@@ -219,9 +223,32 @@
         }
     }
 
+    function beforeMoveToNextPage() {
+        let num = 0;
+        for (let i = 0; i < storageKeys.length; i++) {
+            if (localStorage.getItem(storageKeys[i]) == null) {
+                num++;
+            }
+        }
+        if (num == storageKeys.length && undoStack.length == 0) {
+            return false;
+        } else if (num == storageKeys.length && undoStack.length != 0) {
+            let checkBeforeLoad = confirm("그림이 저장되지 않았습니다. 그림을 저장할까요?");
+
+            if (checkBeforeLoad == true) {
+                saveDrawing();
+
+                return true;
+            }else{
+                return false;
+            }
+        }
+        return true;
+    }
+
 </script>
 
 
-<!--script src="/static/js/drawCanvas.js"></script-->
+<script src="/static/js/drawCanvas.js"></script>
 </body>
 </html>

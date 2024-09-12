@@ -174,6 +174,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
 
+
         document.querySelector(".drawBtn").onclick = () => {
 
             isDrawing = true;
